@@ -1,0 +1,137 @@
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+CREATE DATABASE IF NOT EXISTS `tiendainformatica` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE `tiendainformatica`;
+
+CREATE TABLE `categoria` (
+  `CodCategoria` int(10) NOT NULL,
+  `NombreCategoria` varchar(25) NOT NULL,
+  `DescripcionCategoria` longtext NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT INTO `categoria` (`CodCategoria`, `NombreCategoria`, `DescripcionCategoria`) VALUES
+(1, 'Videojuegos', 'Nos hemos especializado en claves de los mejores videojuegos para ordenador. Consigue tus videojuegos para ordenador favoritos al mejor precio y con la parte coleccionista de las claves físicas. Todas las claves que tenemos son para Steam, la plataforma más popular para los videojuegos en PC.'),
+(2, 'Ratones', 'Nuestros ratones gaming te garantizarán la experiencia más fluida y personalizable de juego. Todos cuentan con botones configurables para tus comandos favoritos así como un selector físico de velocidad de desplazamiento de cursor.'),
+(3, 'Teclados', 'Tenemos los mejores teclados mecánicos para gamers que no quieran gastarse lo mismo  en el teclado que en la gráfica de su ordenador. No los recomendamos si compartes habitación con gente que necesite silencio porque hacen más ruido que la máquina de escribir de mis abuelos, ¡justo lo que estabas buscando!'),
+(4, 'Portátiles', '¿Tienes un presupuesto único para un aparato que te sirva para estudiar o para el trabajo pero que a la vez te permita dedicarle un montón de horas a tu hobby favorito? Pues tenemos la solución perfecta con nuestra selección de portátiles gamers. Tiene leds configurables para que tengas ambientes diferentes según estés en la biblioteca y quieras discreción, o en tu cuarto y prefieras iluminación de discoteca.');
+
+CREATE TABLE `cliente` (
+  `CodCliente` smallint(4) NOT NULL,
+  `NombreCliente` varchar(50) NOT NULL,
+  `ContrasenaCliente` varchar(255) NOT NULL,
+  `DireccionCliente` varchar(50) NOT NULL,
+  `Rol` tinyint(1) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT INTO `cliente` (`CodCliente`, `NombreCliente`, `ContrasenaCliente`, `DireccionCliente`, `Rol`) VALUES
+(8, 'Admin0', '$2y$10$Ij6upNK0VZskjTcBV1VsXO50fxkUFDXH79xQ05srEKIAefA4TGB4S', 'almacén', 0),
+(9, 'Tienda 1', '$2y$10$5cfEdbDHN5gptHnhjEVfHO.UFKuidhTGPe7TNirU7L2uhBx5KfptS', 'Granada Centro - San Antón', 1),
+(10, 'Tienda 2', '$2y$10$CFsAUhD0XxPAH7874MQTPuxYSnKP0/PxwA/RFdxLcGkao9Sy7iqXW', 'Granada Norte - Estación autobuses', 1),
+(11, 'Tienda 3', '$2y$10$kWtGQbzVQvvrHF1JspaMrOLAjWNJmC7XDoMcwBoE5ogRr4flnzoGG', 'Granada Armilla', 1),
+(12, 'Admin 0', '$2y$10$eWtGCssCTE5WgAWNRAyPbe8rMqOZiYuKTsAQANMLRRts6/ROZmUsO', 'almacén', 0);
+
+CREATE TABLE `pedido` (
+  `CodPedido` int(10) NOT NULL,
+  `FechaPedido` datetime(6) NOT NULL,
+  `Estado` varchar(20) NOT NULL,
+  `CodCliente` smallint(4) DEFAULT NULL,
+  `ArticulosTotales` int(10) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT INTO `pedido` (`CodPedido`, `FechaPedido`, `Estado`, `CodCliente`, `ArticulosTotales`) VALUES
+(13, '2023-12-09 03:23:02.000000', 'recibido', 9, 19),
+(14, '2023-12-11 16:48:35.000000', 'enviado', 9, 6),
+(15, '2023-12-11 17:28:38.000000', 'pendiente', 9, 8),
+(16, '2023-12-12 18:45:57.000000', 'pendiente', 10, 2),
+(17, '2023-12-12 19:10:31.000000', 'pendiente', 10, 6);
+
+CREATE TABLE `pedido_producto` (
+  `CodPedidoProducto` int(10) NOT NULL,
+  `unidadesProducto` smallint(4) NOT NULL,
+  `CodPedido` int(10) DEFAULT NULL,
+  `CodProducto` int(10) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT INTO `pedido_producto` (`CodPedidoProducto`, `unidadesProducto`, `CodPedido`, `CodProducto`) VALUES
+(18, 7, 13, 7),
+(19, 3, 13, 8),
+(20, 8, 13, 5),
+(21, 1, 13, 6),
+(22, 6, 14, 7),
+(23, 1, 15, 3),
+(24, 5, 15, 1),
+(25, 2, 15, 8),
+(26, 2, 16, 4),
+(27, 2, 17, 8),
+(28, 4, 17, 5);
+
+CREATE TABLE `producto` (
+  `CodProducto` int(10) NOT NULL,
+  `NombreProducto` varchar(25) NOT NULL,
+  `DescripcionProducto` longtext NOT NULL,
+  `Stock` int(8) NOT NULL,
+  `CodCategoria` int(10) DEFAULT NULL,
+  `Precio` decimal(10,2) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT INTO `producto` (`CodProducto`, `NombreProducto`, `DescripcionProducto`, `Stock`, `CodCategoria`, `Precio`) VALUES
+(1, 'Portátil pesado', 'El fuerte de este portátil es sin duda su batería. Con la adición de tamaño y peso consigue una autonomía extra de 2 horas con respecto a la competencia. Tal vez pierde un poco de portabilidad, pero merece la pena si necesitas estar fuera de casa sin preocuparte en exceso por la autonomía.', 20, 4, '556.90'),
+(2, 'Portátil helicóptero', 'Destaca por su excelente sistema de refrigeración con el que podrás exprimir al extremo las capacidades de este ordenador. Conviene sujetarlo para que no eche a volar.', 0, 4, '721.98'),
+(3, 'Ratón Poderoso', 'Este ratón poderoso es sin lugar a dudas el más completo que puedas encontrar por este precio. Un imprescindible si crees que podrás darle suficiente uso.', 5, 2, '35.66'),
+(4, 'Ratón Alienígena', 'Si te gusta llamar la atención este es tu ratón. Con su color amarillo fluorescente herirá a la vista de cualquiera que estuviera pensando en robarte nada. Es posible que te quedes sin amigos por la vergüenza ajena si lo sacas fuera de tu casa, pero sin duda podrás reconocer tu ratón de lejos.', 0, 2, '12.05'),
+(5, 'Teclado rocoso', 'Este teclado es el favorito de aquellas personas que fuera del gimnasio aún quieren entrenar. Hace falta una presión extra para realizar la pulsación. Cuando finalmente pulsas la tecla suena como si chocaras dos piedras.', 18, 3, '78.99'),
+(6, 'Teclado tormenta', 'Su nombre viene de que con su potente retroiluminación y su ruido de pulsación mecánica es como ver los rayos y escuchar los truenos de una gran tormenta. Perfecto si no quieres ver la pantalla ni escuchar el audio de nada.', 18, 3, '34.85'),
+(7, 'Baldur\'s Gate 3', 'Baldur\'s Gate 3 es el juego que mejor recibimiento por la parte de la comunidad ha tenido en su año de lanzamiento, 2023. Sin lugar a dudas un imprescindible en tu biblioteca', 78, 1, '59.99'),
+(8, 'Spirit\'s Farer', 'Este juego indie ha conquistado nuestro corazón con su preciosa historia, arte acogedor y jugabilidad sencilla. Si estás pasando por un duelo te recomendamos a que esperes antes de jugarlo porque te derretirá el corazón', 5, 1, '15.96');
+
+
+ALTER TABLE `categoria`
+  ADD PRIMARY KEY (`CodCategoria`),
+  ADD UNIQUE KEY `NombreCategoria` (`NombreCategoria`);
+
+ALTER TABLE `cliente`
+  ADD PRIMARY KEY (`CodCliente`),
+  ADD UNIQUE KEY `NombreCliente` (`NombreCliente`);
+
+ALTER TABLE `pedido`
+  ADD PRIMARY KEY (`CodPedido`),
+  ADD KEY `CodCliente_fk` (`CodCliente`);
+
+ALTER TABLE `pedido_producto`
+  ADD PRIMARY KEY (`CodPedidoProducto`),
+  ADD KEY `CodPedido_fk` (`CodPedido`),
+  ADD KEY `CodProducto_fk` (`CodProducto`);
+
+ALTER TABLE `producto`
+  ADD PRIMARY KEY (`CodProducto`),
+  ADD UNIQUE KEY `NombreProducto` (`NombreProducto`),
+  ADD KEY `CodCategoria_fk` (`CodCategoria`);
+
+
+ALTER TABLE `categoria`
+  MODIFY `CodCategoria` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+
+ALTER TABLE `cliente`
+  MODIFY `CodCliente` smallint(4) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+
+ALTER TABLE `pedido`
+  MODIFY `CodPedido` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+
+ALTER TABLE `pedido_producto`
+  MODIFY `CodPedidoProducto` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
+
+ALTER TABLE `producto`
+  MODIFY `CodProducto` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+
+
+ALTER TABLE `pedido`
+  ADD CONSTRAINT `CodCliente_fk` FOREIGN KEY (`CodCliente`) REFERENCES `cliente` (`CodCliente`);
+
+ALTER TABLE `pedido_producto`
+  ADD CONSTRAINT `CodPedido_fk` FOREIGN KEY (`CodPedido`) REFERENCES `pedido` (`CodPedido`),
+  ADD CONSTRAINT `CodProducto_fk` FOREIGN KEY (`CodProducto`) REFERENCES `producto` (`CodProducto`);
+
+ALTER TABLE `producto`
+  ADD CONSTRAINT `CodCategoria_fk` FOREIGN KEY (`CodCategoria`) REFERENCES `categoria` (`CodCategoria`);
+COMMIT;
